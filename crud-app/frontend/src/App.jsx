@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import anime from "animejs/lib/anime.es.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -75,26 +76,28 @@ export default function App() {
       });
     }, heroRef);
 
-    const orbitSpin = gsap.to(".orbit", {
+    const orbitSpin = anime({
+      targets: ".orbit",
       rotate: 360,
-      duration: 14,
-      ease: "none",
-      repeat: -1
+      duration: 14000,
+      easing: "linear",
+      loop: true
     });
 
-    const flowAnimation = gsap.to(".story-wave", {
-      x: 18,
-      y: -12,
-      duration: 2.6,
-      ease: "sine.inOut",
-      yoyo: true,
-      repeat: -1
+    const flowAnimation = anime({
+      targets: ".story-wave",
+      translateX: [0, 18],
+      translateY: [0, -12],
+      direction: "alternate",
+      duration: 2600,
+      easing: "easeInOutSine",
+      loop: true
     });
 
     return () => {
       ctx.revert();
-      orbitSpin.kill();
-      flowAnimation.kill();
+      orbitSpin.pause();
+      flowAnimation.pause();
     };
   }, []);
 
