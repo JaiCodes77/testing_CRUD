@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import anime from "animejs";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -18,7 +17,6 @@ export default function App() {
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const heroRef = useRef(null);
-  const orbitRef = useRef(null);
   const flowRef = useRef(null);
 
   const totalItems = useMemo(() => items.length, [items]);
@@ -77,28 +75,26 @@ export default function App() {
       });
     }, heroRef);
 
-    const orbitAnimation = anime({
-      targets: orbitRef.current,
+    const orbitSpin = gsap.to(".orbit", {
       rotate: 360,
-      duration: 14000,
-      easing: "linear",
-      loop: true
+      duration: 14,
+      ease: "none",
+      repeat: -1
     });
 
-    const flowAnimation = anime({
-      targets: flowRef.current,
-      translateX: [0, 18],
-      translateY: [0, -12],
-      direction: "alternate",
-      duration: 2600,
-      easing: "easeInOutSine",
-      loop: true
+    const flowAnimation = gsap.to(".story-wave", {
+      x: 18,
+      y: -12,
+      duration: 2.6,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1
     });
 
     return () => {
       ctx.revert();
-      orbitAnimation.pause();
-      flowAnimation.pause();
+      orbitSpin.kill();
+      flowAnimation.kill();
     };
   }, []);
 
@@ -220,7 +216,7 @@ export default function App() {
         <div className="hero-card parallax">
           <div className="glow" />
           <div className="card-inner">
-            <div className="orbit" ref={orbitRef}>
+            <div className="orbit">
               <div className="orbit-dot" />
             </div>
             <h2>Beginner Friendly</h2>
