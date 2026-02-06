@@ -74,6 +74,20 @@ export default function App() {
         },
         y: -60
       });
+
+      gsap.utils.toArray(".glass-card").forEach((card) => {
+        gsap.from(card, {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%",
+            toggleActions: "play none none reverse"
+          },
+          y: 30,
+          opacity: 0,
+          duration: 0.7,
+          ease: "power2.out"
+        });
+      });
     }, heroRef);
 
     const orbitSpin = anime({
@@ -94,10 +108,32 @@ export default function App() {
       loop: true
     });
 
+    const floaties = anime({
+      targets: ".floaty",
+      translateY: [0, -16],
+      direction: "alternate",
+      delay: anime.stagger(200),
+      duration: 2400,
+      easing: "easeInOutSine",
+      loop: true
+    });
+
+    const glowPulse = anime({
+      targets: ".glow-ring",
+      scale: [0.95, 1.05],
+      opacity: [0.5, 0.9],
+      direction: "alternate",
+      duration: 2200,
+      easing: "easeInOutSine",
+      loop: true
+    });
+
     return () => {
       ctx.revert();
       orbitSpin.pause();
       flowAnimation.pause();
+      floaties.pause();
+      glowPulse.pause();
     };
   }, []);
 
@@ -189,8 +225,8 @@ export default function App() {
           <p className="badge reveal-up">FastAPI + React CRUD</p>
           <h1 className="reveal-up">Build momentum with a clean CRUD flow.</h1>
           <p className="hero-subtitle reveal-up">
-            Practice the fundamentals: create, read, update, and delete
-            records with a stylish, scrollable experience.
+            Practice the fundamentals: create, read, update, and delete records
+            with a cinematic, scrollable experience built for beginners.
           </p>
           <div className="hero-actions reveal-up">
             <button
@@ -218,6 +254,7 @@ export default function App() {
         </div>
         <div className="hero-card parallax">
           <div className="glow" />
+          <div className="glow-ring" />
           <div className="card-inner">
             <div className="orbit">
               <div className="orbit-dot" />
@@ -236,6 +273,45 @@ export default function App() {
           </div>
         </div>
       </header>
+
+      <section className="marquee">
+        <div className="marquee-track">
+          <span>CRUD</span>
+          <span>FastAPI</span>
+          <span>React</span>
+          <span>SQLite</span>
+          <span>Beginner friendly</span>
+          <span>Clean UI</span>
+          <span>Animations</span>
+          <span>CRUD</span>
+          <span>FastAPI</span>
+          <span>React</span>
+        </div>
+      </section>
+
+      <section className="focus">
+        <div className="focus-card reveal-up">
+          <h2>Every scroll tells the story.</h2>
+          <p>
+            A project that feels premium helps you stay motivated while
+            learning. Each section reinforces a key API skill.
+          </p>
+        </div>
+        <div className="focus-grid">
+          <div className="glass-card floaty">
+            <h3>Structured models</h3>
+            <p>SQLModel keeps types tight and validation predictable.</p>
+          </div>
+          <div className="glass-card floaty">
+            <h3>Responsive UI</h3>
+            <p>Layouts adapt to mobile without losing the style.</p>
+          </div>
+          <div className="glass-card floaty">
+            <h3>Smooth motion</h3>
+            <p>GSAP + anime bring polish without cluttering your code.</p>
+          </div>
+        </div>
+      </section>
 
       <section id="story" className="story">
         <div className="story-header">
@@ -298,6 +374,29 @@ export default function App() {
         <div className="feature-card">
           <h3>SQLite simplicity</h3>
           <p>No extra services. Your data lives right in the repo.</p>
+        </div>
+      </section>
+
+      <section className="cta">
+        <div className="cta-card">
+          <h2>Ready to ship your first API?</h2>
+          <p>
+            Keep the momentum. Add one more feature and watch your CRUD app
+            evolve into a real product.
+          </p>
+          <div className="cta-actions">
+            <button
+              className="primary"
+              onClick={() =>
+                document.querySelector("#items-section")?.scrollIntoView({
+                  behavior: "smooth"
+                })
+              }
+            >
+              Start Building
+            </button>
+            <button className="ghost">Add a new feature</button>
+          </div>
         </div>
       </section>
 
