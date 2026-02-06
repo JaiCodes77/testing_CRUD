@@ -1,4 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import anime from "animejs/lib/anime.es.js";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const API_BASE = "http://localhost:8000";
 
@@ -14,11 +17,89 @@ export default function App() {
   const [error, setError] = useState("");
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
+  const heroRef = useRef(null);
+  const orbitRef = useRef(null);
+  const flowRef = useRef(null);
 
   const totalItems = useMemo(() => items.length, [items]);
 
   useEffect(() => {
     loadItems();
+  }, []);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      gsap.from(".reveal-up", {
+        y: 40,
+        opacity: 0,
+        duration: 0.9,
+        ease: "power3.out",
+        stagger: 0.15
+      });
+
+      gsap.utils.toArray(".panel").forEach((panel) => {
+        gsap.from(panel, {
+          scrollTrigger: {
+            trigger: panel,
+            start: "top 80%",
+            toggleActions: "play none none reverse"
+          },
+          y: 40,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power2.out"
+        });
+      });
+
+      gsap.utils.toArray(".story-step").forEach((step, index) => {
+        gsap.from(step, {
+          scrollTrigger: {
+            trigger: step,
+            start: "top 85%",
+            toggleActions: "play none none reverse"
+          },
+          x: index % 2 === 0 ? -40 : 40,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power2.out"
+        });
+      });
+
+      gsap.to(".parallax", {
+        scrollTrigger: {
+          trigger: ".parallax",
+          start: "top bottom",
+          scrub: true
+        },
+        y: -60
+      });
+    }, heroRef);
+
+    const orbitAnimation = anime({
+      targets: orbitRef.current,
+      rotate: 360,
+      duration: 14000,
+      easing: "linear",
+      loop: true
+    });
+
+    const flowAnimation = anime({
+      targets: flowRef.current,
+      translateX: [0, 18],
+      translateY: [0, -12],
+      direction: "alternate",
+      duration: 2600,
+      easing: "easeInOutSine",
+      loop: true
+    });
+
+    return () => {
+      ctx.revert();
+      orbitAnimation.pause();
+      flowAnimation.pause();
+    };
   }, []);
 
   async function loadItems() {
@@ -103,16 +184,16 @@ export default function App() {
   }
 
   return (
-    <div className="page">
+    <div className="page" ref={heroRef}>
       <header className="hero">
         <div className="hero-text">
-          <p className="badge">FastAPI + React CRUD</p>
-          <h1>Build momentum with a clean CRUD flow.</h1>
-          <p className="hero-subtitle">
+          <p className="badge reveal-up">FastAPI + React CRUD</p>
+          <h1 className="reveal-up">Build momentum with a clean CRUD flow.</h1>
+          <p className="hero-subtitle reveal-up">
             Practice the fundamentals: create, read, update, and delete
-            records with a stylish UI.
+            records with a stylish, scrollable experience.
           </p>
-          <div className="hero-actions">
+          <div className="hero-actions reveal-up">
             <button
               className="primary"
               onClick={() =>
@@ -123,12 +204,25 @@ export default function App() {
             >
               Jump to Items
             </button>
+            <button
+              className="ghost"
+              onClick={() =>
+                document.querySelector("#story")?.scrollIntoView({
+                  behavior: "smooth"
+                })
+              }
+            >
+              See the Story
+            </button>
             <span className="stats">{totalItems} items tracked</span>
           </div>
         </div>
-        <div className="hero-card">
+        <div className="hero-card parallax">
           <div className="glow" />
           <div className="card-inner">
+            <div className="orbit" ref={orbitRef}>
+              <div className="orbit-dot" />
+            </div>
             <h2>Beginner Friendly</h2>
             <p>
               This dashboard is intentionally simple so you can focus on how
@@ -138,10 +232,75 @@ export default function App() {
               <span>FastAPI</span>
               <span>SQLModel</span>
               <span>SQLite</span>
+              <span>React</span>
             </div>
           </div>
         </div>
       </header>
+
+      <section id="story" className="story">
+        <div className="story-header">
+          <h2>Make your first API feel cinematic.</h2>
+          <p>
+            Scroll through the flow and see how a simple CRUD app becomes a
+            real product. Each step highlights a core FastAPI skill.
+          </p>
+        </div>
+        <div className="story-grid">
+          {[
+            {
+              title: "Model the data",
+              text: "Define a clean SQLModel schema and keep your types aligned."
+            },
+            {
+              title: "Create confidently",
+              text: "POST requests validate input and store it in SQLite."
+            },
+            {
+              title: "Read with clarity",
+              text: "List and fetch items with predictable response models."
+            },
+            {
+              title: "Update smoothly",
+              text: "PUT actions feel instant with partial updates and UI sync."
+            },
+            {
+              title: "Delete safely",
+              text: "Remove items with clear status feedback and refreshes."
+            },
+            {
+              title: "Ship the UI",
+              text: "A stylish front end makes the learning feel rewarding."
+            }
+          ].map((step, index) => (
+            <div key={step.title} className="story-step">
+              <span className="step-index">0{index + 1}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </div>
+          ))}
+        </div>
+        <div className="story-wave" ref={flowRef}>
+          <span />
+          <span />
+          <span />
+        </div>
+      </section>
+
+      <section className="feature-band">
+        <div className="feature-card">
+          <h3>FastAPI patterns</h3>
+          <p>See clean CRUD routes, models, and dependency patterns.</p>
+        </div>
+        <div className="feature-card">
+          <h3>Front-end polish</h3>
+          <p>Beautiful UI and motion so the project feels alive.</p>
+        </div>
+        <div className="feature-card">
+          <h3>SQLite simplicity</h3>
+          <p>No extra services. Your data lives right in the repo.</p>
+        </div>
+      </section>
 
       <main id="items-section" className="content">
         <section className="panel">
