@@ -1,15 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
 from sqlmodel import Field, SQLModel
 
 
 class ItemBase(SQLModel):
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     price: float
 
 
 class Item(ItemBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
 
 
 class ItemCreate(ItemBase):
@@ -17,6 +18,6 @@ class ItemCreate(ItemBase):
 
 
 class ItemUpdate(SQLModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    price: Optional[float] = None
+    name: str | None = None
+    description: str | None = None
+    price: float | None = None
